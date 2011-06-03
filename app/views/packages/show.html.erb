@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Source lat:</b>
+  <%= @package.source_lat %>
+</p>
+
+<p>
+  <b>Source lng:</b>
+  <%= @package.source_lng %>
+</p>
+
+<p>
+  <b>Dest lat:</b>
+  <%= @package.dest_lat %>
+</p>
+
+<p>
+  <b>Dest:</b>
+  <%= @package.dest %>
+</p>
+
+<p>
+  <b>Sent date:</b>
+  <%= @package.sent_date %>
+</p>
+
+<p>
+  <b>Exp delivery:</b>
+  <%= @package.exp_delivery %>
+</p>
+
+
+<%= link_to 'Edit', edit_package_path(@package) %> |
+<%= link_to 'Back', packages_path %>

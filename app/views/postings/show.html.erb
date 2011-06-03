@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Person:</b>
+  <%= @posting.person_id %>
+</p>
+
+<p>
+  <b>Project:</b>
+  <%= @posting.project_id %>
+</p>
+
+<p>
+  <b>Lat:</b>
+  <%= @posting.lat %>
+</p>
+
+<p>
+  <b>Lng:</b>
+  <%= @posting.lng %>
+</p>
+
+
+<%= link_to 'Edit', edit_posting_path(@posting) %> |
+<%= link_to 'Back', postings_path %>

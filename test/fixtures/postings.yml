@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  person_id: 1
+  project_id: 1
+  lat: 1.5
+  lng: 1.5
+
+two:
+  person_id: 1
+  project_id: 1
+  lat: 1.5
+  lng: 1.5

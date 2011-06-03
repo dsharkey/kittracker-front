@@ -1,0 +1,33 @@
+<h1>Listing packages</h1>
+
+<table>
+  <tr>
+    <th>Source lat</th>
+    <th>Source lng</th>
+    <th>Dest lat</th>
+    <th>Dest</th>
+    <th>Sent date</th>
+    <th>Exp delivery</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @packages.each do |package| %>
+  <tr>
+    <td><%= package.source_lat %></td>
+    <td><%= package.source_lng %></td>
+    <td><%= package.dest_lat %></td>
+    <td><%= package.dest %></td>
+    <td><%= package.sent_date %></td>
+    <td><%= package.exp_delivery %></td>
+    <td><%= link_to 'Show', package %></td>
+    <td><%= link_to 'Edit', edit_package_path(package) %></td>
+    <td><%= link_to 'Destroy', package, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Package', new_package_path %>
