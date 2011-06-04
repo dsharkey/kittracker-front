@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KittrackFront</title>
+<!--  <link href="/stylesheets/scaffold.css?1307145935" media="screen" rel="stylesheet" type="text/css" />
+<script src="/javascripts/prototype.js?1307145935" type="text/javascript"></script>
+<script src="/javascripts/effects.js?1307145935" type="text/javascript"></script>
+<script src="/javascripts/dragdrop.js?1307145935" type="text/javascript"></script>
+<script src="/javascripts/controls.js?1307145935" type="text/javascript"></script>
+<script src="/javascripts/rails.js?1307145935" type="text/javascript"></script>
+<script src="/javascripts/application.js?1307145935" type="text/javascript"></script>-->
+
+
+<script type="text/javascript"src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<link type="text/css" href="stylesheets/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
+<link type="text/css" href="stylesheets/style.css" rel="stylesheet" />	
+
+<script type="text/javascript" src="javascripts/jquery-ui-1.8.13.custom.min.js"></script>
+<script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    var map;
+    var pplMarkers = new Array();
+    var pkgMarkers = new Array();
+    var ppl;
+    var pkg;
+    var placePerson=true;
+    function pplData(start){
+        this.pos={};
+        this.pos.lat=start.position.Ia;
+        this.pos.lng=start.position.Ja;
+    }
+    
+    function pkgData(start, stop){
+        this.source={};
+        this.dest={};
+        this.source.lat=start.position.Ia;
+        this.source.lng=start.position.Ja;
+        this.dest.lat=stop.position.Ia;
+        this.dest.lng=stop.position.Ja;
+    }
+    $(document).ready(function(){
+        var mLatlng = new google.maps.LatLng(10,0);
+        var myOptions = {
+            zoom: 2,
+            center: mLatlng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        $('.dialog').dialog({
+            autoOpen: false,
+            width: 600,
+            buttons: {
+                "Ok": function() { 
+                        $(this).dialog("close"); 
+                }, 
+                "Cancel": function() { 
+                        $(this).dialog("close"); 
+                } 
+            }
+        });
+
+        $('#personLink').click(function(){
+            google.maps.event.addListener(map, 'click', function(event) {
+                placeMarker(event.latLng); 
+            });
+            $("#header h2").empty().append("Place a person");
+            placePerson=true;
+        });
+        $('#pkgLink').click(function(){
+            google.maps.event.addListener(map, 'click', function(event) {
+               placeMarker(event.latLng); 
+            });
+            $("#header h2").empty().append("Place a package");
+            placePerson=false;
+        });
+    });
+
+    function placeMarker(location){
+        var marker = new google.maps.Marker({
+                position: location, 
+                map: map,
+                visible: true,
+                /*draggable: true*/
+            });
+        if(placePerson){
+        pplMarkers.push(marker);
+            if(pplMarkers.length==1){
+                google.maps.event.clearListeners(map, 'click');
+                ppl=new pplData(pplMarkers[0]);
+                $("#pplDialog").dialog("open");
+                $("#pplDialog #lat").val(ppl.pos.lat);
+                $("#pplDialog #lng").val(ppl.pos.lng);
+            }
+        }else{
+            pkgMarkers.push(marker);
+            if(pkgMarkers.length==2){
+                google.maps.event.clearListeners(map, 'click');
+                pkg=new pkgData(pkgMarkers[0],pkgMarkers[1]);
+                $("#pkgDialog").dialog("open");
+                $("#pkgDialog #source_lat").val(pkg.source.lat);
+                $("#pkgDialog #source_lng").val(pkg.source.lng);
+                $("#pkgDialog #dest_lat").val(pkg.dest.lat);
+                $("#pkgDialog #dest_lng").val(pkg.dest.lng);
+            }
+        }
+    }
+</script>
+
+
+</head>
+<body>
+
+<p id="notice"></p>
+
+
+<div id="map_canvas"></div>
+<div id='header'>
+<h1>red cross - new zealand</h1>
+<h2></h2>
+</div>
+<div class='link1' id="personLink">Place Person</div>
+<div class='link2' id="pkgLink">Place Package</div>
+<div class='dialog' id="pplDialog" title="People">
+    <h2>People</h2>
+<ul>
+       <li>john (1234121241) at 12.0,32.0</li> 
+    <form accept-charset="UTF-8" action="/organizations/1/projects/2/add_person" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="EVR8buAupLMq6Xyf/w2kLl137wKIHwi2a2OYLa8ExMs=" /></div>
+        <div>
+            <select id="person_id" name="person_id"><option value='2'>ted</option><option value='3'>susan</option></select>
+        </div>
+        <div>
+            lat,lng <input id="lat" name="lat" type="text" /> <input id="lng" name="lng" type="text" />
+        </div>
+        <div>
+            <input id="project_id" name="project_id" type="hidden" value="2" />
+            <input name="commit" type="submit" value="Add" />
+        </div>
+    </form>
+</ul>
+</div>
+
+<div class='dialog' id="pkgDialog" title="Packages">
+<h2>Packages</h2>
+
+<ul>
+    <form accept-charset="UTF-8" action="/organizations/1/projects/2/add_package" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="EVR8buAupLMq6Xyf/w2kLl137wKIHwi2a2OYLa8ExMs=" /></div>
+         <div>
+           identifier <input id="identifier" name="identifier" type="text" value="6942" />
+        </div>
+        <div>
+            source lat,lng <input id="source_lat" name="source_lat" type="text" /> <input id="source_lng" name="source_lng" type="text" />
+        </div>
+        <div>
+            dest lat,lng <input id="dest_lat" name="dest_lat" type="text" /> <input id="dest_lng" name="dest_lng" type="text" />
+        </div>
+        <div>
+            date sent <input id="sent_date" name="sent_date" type="text" />
+        </div>
+        <div>
+            expected arrival date <input id="exp_delivery_date" name="exp_delivery_date" type="text" />
+        </div>
+        <div>
+            <input id="project_id" name="project_id" type="hidden" value="2" />
+            <input name="commit" type="submit" value="Add" />
+        </div>
+    </form>
+</ul>
+</div>
+</body>
+</html>
