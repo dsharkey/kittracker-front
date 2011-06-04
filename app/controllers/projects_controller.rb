@@ -66,7 +66,7 @@ class ProjectsController < ApplicationController
   # POST /projects.xml
   def create
     @project = Project.new(params[:project])
-    @project.organization = @organization
+    @project.organization_id = params[:organization_id]
 
     respond_to do |format|
       if @project.save
