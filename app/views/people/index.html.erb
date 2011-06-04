@@ -1,22 +1,11 @@
-<h1>Listing people</h1>
+<h1><%= @organization.name %></h1>
 
 <table>
-  <tr>
-    <th>Phone number</th>
-    <th>Employee</th>
-    <th>Organization</th>
-    <th>Name</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
 
 <% @people.each do |person| %>
   <tr>
-    <td><%= person.phone_number %></td>
-    <td><%= person.employee_id %></td>
-    <td><%= person.organization_id %></td>
     <td><%= person.name %></td>
+    <td><%= person.phone_number %></td>
     <td><%= link_to 'Show', person %></td>
     <td><%= link_to 'Edit', edit_person_path(person) %></td>
     <td><%= link_to 'Destroy', person, :confirm => 'Are you sure?', :method => :delete %></td>
@@ -26,4 +15,4 @@
 
 <br />
 
-<%= link_to 'New Person', new_person_path %>
+<%= link_to 'New Person', new_organization_person_path(@organization) %>

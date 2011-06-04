@@ -25,6 +25,26 @@ class ProjectsController < ApplicationController
       format.xml  { render :xml => @project }
     end
   end
+  
+  def add_person
+    @project = Project.find(params[:project_id])
+    @posting = Posting.new(:person_id => params[:person_id],:lat => params[:lat],:lng => params[:lng],:project_id => params[:project_id])
+    if @posting.save
+      redirect_to project_path(@project)
+    else
+      
+    end
+  end
+  
+  def add_package
+    @project = Project.find(params[:project_id])
+    @package = Package.new(:identifier => params[:identifier],:sent_date => DateTime.parse(params[:sent_date]),:exp_delivery_date => DateTime.parse(params[:exp_delivery_date]),:source_lat => params[:source_lat],:source_lng => params[:source_lng],:dest_lat => params[:dest_lat],:dest_lng => params[:dest_lng],:project_id => @project.id)
+    if @package.save
+      redirect_to project_path(@project)
+    else
+      
+    end
+  end
 
   # GET /projects/new
   # GET /projects/new.xml

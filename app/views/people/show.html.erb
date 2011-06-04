@@ -1,18 +1,8 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Phone number:</b>
-  <%= @person.phone_number %>
-</p>
-
-<p>
-  <b>Employee:</b>
-  <%= @person.employee_id %>
-</p>
-
-<p>
   <b>Organization:</b>
-  <%= @person.organization_id %>
+  <%= @person.organization.name %>
 </p>
 
 <p>
@@ -20,6 +10,10 @@
   <%= @person.name %>
 </p>
 
+<p>
+  <b>Phone number:</b>
+  <%= @person.phone_number %>
+</p>
 
 <%= link_to 'Edit', edit_person_path(@person) %> |
-<%= link_to 'Back', people_path %>
+<%= link_to 'Back', organization_people_path(@person.organization) %>

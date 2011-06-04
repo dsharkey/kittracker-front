@@ -1,9 +1,24 @@
 <p id="notice"><%= notice %></p>
 
+<h1><%= @organization.name %></h1>
+
+<h2>People</h2>
+<ul>
+    <% @organization.people.each do |p| %>
+        <li><%= link_to p.name, organization_person_path(@organization,p) %></li>
+    <% end %>
+</ul>
 <p>
-  <b>Name:</b>
-  <%= @organization.name %>
+    <%= link_to "Add a person",new_organization_person_path(@organization)%>
 </p>
+
+<h2>Projects</h2>
+<ul>
+    <% @organization.projects.each do |p| %>
+        <li><%= link_to p.name, organization_project_path(@organization,p) %></li>
+    <% end %>
+</ul>
+
 
 
 <%= link_to 'Edit', edit_organization_path(@organization) %> |

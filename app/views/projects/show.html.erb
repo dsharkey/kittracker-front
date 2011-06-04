@@ -4,6 +4,50 @@
 
 <h2>People</h2>
 
+<ul>
+    <% @project.postings.each do |post| %>
+       <li><%= post.person.name %> (<%= post.person.phone_number %>) at <%= post.lat%>,<%= post.lng%></li> 
+    <% end %>
+    <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_person",:method => :post) %>
+        <div>
+            <%= select_tag(:person_id,((@organization.people.select {|person| !@project.postings.any? {|post| post.person_id == person.id}}).map {|p| "<option value='#{h(p.id)}'>#{h(p.name)}</option>"}).join('').html_safe)%>
+        </div>
+        <div>
+            lat,lng <%= text_field_tag :lat %> <%= text_field_tag :lng %>
+        </div>
+        <div>
+            <%= hidden_field_tag :project_id, @project.id %>
+            <%= submit_tag 'Add'%>
+        </div>
+    </form>
+</ul>
 
 
 <h2>Packages</h2>
+
+<ul>
+    <% @project.packages.each do |package| %>
+       <li><%= package.identifier %></li> 
+    <% end %>
+    <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_package",:method => :post) %>
+         <div>
+           identifier <%= text_field_tag :identifier, (rand()*10000).round.to_s %>
+        </div>
+        <div>
+            source lat,lng <%= text_field_tag :source_lat %> <%= text_field_tag :source_lng %>
+        </div>
+        <div>
+            dest lat,lng <%= text_field_tag :dest_lat %> <%= text_field_tag :dest_lng %>
+        </div>
+        <div>
+            date sent <%= text_field_tag :sent_date %>
+        </div>
+        <div>
+            expected arrival date <%= text_field_tag :exp_delivery_date %>
+        </div>
+        <div>
+            <%= hidden_field_tag :project_id, @project.id %>
+            <%= submit_tag 'Add'%>
+        </div>
+    </form>
+</ul>

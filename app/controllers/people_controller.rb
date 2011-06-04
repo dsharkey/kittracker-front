@@ -2,7 +2,8 @@ class PeopleController < ApplicationController
   # GET /people
   # GET /people.xml
   def index
-    @people = Person.all
+    @organization = Organization.find(params[:organization_id])
+    @people = @organization.people
 
     respond_to do |format|
       format.html # index.html.erb
@@ -24,6 +25,7 @@ class PeopleController < ApplicationController
   # GET /people/new
   # GET /people/new.xml
   def new
+    @organization = Organization.find(params[:organization_id])
     @person = Person.new
 
     respond_to do |format|
@@ -41,6 +43,7 @@ class PeopleController < ApplicationController
   # POST /people.xml
   def create
     @person = Person.new(params[:person])
+    @person.organization_id = params[:organization_id]
 
     respond_to do |format|
       if @person.save

@@ -1,23 +1,12 @@
-<h1>Listing organizations</h1>
-
-<table>
-  <tr>
-    <th>Name</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @organizations.each do |organization| %>
-  <tr>
-    <td><%= organization.name %></td>
-    <td><%= link_to 'Show', organization %></td>
-    <td><%= link_to 'Edit', edit_organization_path(organization) %></td>
-    <td><%= link_to 'Destroy', organization, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
+<ul>
+    <% @organizations.each do |o| %>
+       <li><%= link_to o.name, o %></li> 
+       <ul>
+        <% o.projects.each do |proj| %>
+           <li><%= link_to proj.name, project_path(proj)%></li> 
+        <% end %>
+       </ul>
+    <% end %>
+</ul>
 
 <%= link_to 'New Organization', new_organization_path %>

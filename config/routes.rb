@@ -1,11 +1,20 @@
 KittrackFront::Application.routes.draw do
-  resources :postings
+  resources :packages
 
-  resources :people
+  resources :postings
 
   resources :projects
 
-  resources :organizations
+  resources :organizations do |org|
+    resources :projects do
+      post 'add_person','add_package'
+    end
+    resources :people
+  end
+  
+  resources :people
+  
+  root :to => "organizations#index"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
