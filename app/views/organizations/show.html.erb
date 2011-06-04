@@ -18,7 +18,9 @@
         <li><%= link_to p.name, organization_project_path(@organization,p) %></li>
     <% end %>
 </ul>
-
+<p>
+    <%= link_to "Add a project",new_organization_project_path(@organization)%>
+</p>
 
 
 <%= link_to 'Edit', edit_organization_path(@organization) %> |

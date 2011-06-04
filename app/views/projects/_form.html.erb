@@ -1,4 +1,4 @@
-<%= form_for([@organization,@project]) do |f| %>
+<%= form_for([@organization,@project],:url => organization_projects_path(@organization)) do |f| %>
   <% if @project.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h2>
