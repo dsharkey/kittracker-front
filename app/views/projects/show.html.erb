@@ -1,4 +1,98 @@
 <p id="notice"><%= notice %></p>
+<script type="text/javascript"src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<link type="text/css" href="/stylesheets/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
+<link type="text/css" href="/stylesheets/style.css" rel="stylesheet" />	
+
+<script type="text/javascript" src="/javascripts/jquery-ui-1.8.13.custom.min.js"></script>
+<script type="text/javascript"src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    var map;
+    var pplMarkers = new Array();
+    var pkgMarkers = new Array();
+    var ppl;
+    var pkg;
+    var placePerson=true;
+    function pplData(start){
+        this.pos={};
+        this.pos.lat=start.position.Ia;
+        this.pos.lng=start.position.Ja;
+    }
+    
+    function pkgData(start, stop){
+        this.source={};
+        this.dest={};
+        this.source.lat=start.position.Ia;
+        this.source.lng=start.position.Ja;
+        this.dest.lat=stop.position.Ia;
+        this.dest.lng=stop.position.Ja;
+    }
+    $(document).ready(function(){
+        var mLatlng = new google.maps.LatLng(10,0);
+        var myOptions = {
+            zoom: 2,
+            center: mLatlng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        $('.dialog').dialog({
+            autoOpen: false,
+            width: 600,
+            buttons: {
+                "Ok": function() { 
+                        $(this).dialog("close"); 
+                }, 
+                "Cancel": function() { 
+                        $(this).dialog("close"); 
+                } 
+            }
+        });
+
+        $('#personLink').click(function(){
+            google.maps.event.addListener(map, 'click', function(event) {
+                placeMarker(event.latLng); 
+            });
+            $("#header h2").empty().append("Place a person");
+            placePerson=true;
+        });
+        $('#pkgLink').click(function(){
+            google.maps.event.addListener(map, 'click', function(event) {
+               placeMarker(event.latLng); 
+            });
+            $("#header h2").empty().append("Place a package");
+            placePerson=false;
+        });
+    });
+
+    function placeMarker(location){
+        var marker = new google.maps.Marker({
+                position: location, 
+                map: map,
+                visible: true,
+                /*draggable: true*/
+            });
+        if(placePerson){
+        pplMarkers.push(marker);
+            if(pplMarkers.length==1){
+                google.maps.event.clearListeners(map, 'click');
+                ppl=new pplData(pplMarkers[0]);
+                $("#pplDialog").dialog("open");
+                $("#pplDialog #lat").val(ppl.pos.lat);
+                $("#pplDialog #lng").val(ppl.pos.lng);
+            }
+        }else{
+            pkgMarkers.push(marker);
+            if(pkgMarkers.length==2){
+                google.maps.event.clearListeners(map, 'click');
+                pkg=new pkgData(pkgMarkers[0],pkgMarkers[1]);
+                $("#pkgDialog").dialog("open");
+                $("#pkgDialog #source_lat").val(pkg.source.lat);
+                $("#pkgDialog #source_lng").val(pkg.source.lng);
+                $("#pkgDialog #dest_lat").val(pkg.dest.lat);
+                $("#pkgDialog #dest_lng").val(pkg.dest.lng);
+            }
+        }
+    }
+</script>
 
 <script type="text/javascript">
     
@@ -8,55 +102,61 @@
     // packages: [0=>{orgID,projID,stat,location,pkgID,sendDate,recDate}, 1=>{orgID,projID,stat,location,pkgID,sendDate,recDate}]
     var packages = <%= (Package.all.map {|p| {p.id => {"orgID" => p.project.organization_id, "projID" => p.project_id, "stat" => 1, "location" => [p.source_lat,p.source_lng], "pkgID" => p.identifier, "sendDate" => p.sent_date.to_s, "recDate" => p.exp_delivery_date.to_s}}}).reduce {|a,b| a.merge(b)}.to_json.html_safe %>;
 </script>
-
+<div id="map_canvas"></div>
+<div id="header">
 <h1><%= @organization.name %> - <%= @project.name %></h1>
-
+<h2></h2>
+</div>
+<div class='link1' id="personLink">Place Person</div>
+<div class='link2' id="pkgLink">Place Package</div>
+<div class='dialog' id="pplDialog" title="People">
 <h2>People</h2>
+  <ul>
+      <% @project.postings.each do |post| %>
+         <li><%= post.person.name %> (<%= post.person.phone_number %>) at <%= post.lat%>,<%= post.lng%></li>
+      <% end %>
+      <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_person",:method => :post) %>
+          <div>
+              <%= select_tag(:person_id,((@organization.people.select {|person| !@project.postings.any? {|post| post.person_id == person.id}}).map {|p| "<option value='#{h(p.id)}'>#{h(p.name)}</option>"}).join('').html_safe)%>
+          </div>
+          <div>
+              lat,lng <%= text_field_tag :lat %> <%= text_field_tag :lng %>
+          </div>
+          <div>
+              <%= hidden_field_tag :project_id, @project.id %>
+              <%= submit_tag 'Add'%>
+          </div>
+      </form>
+  </ul>
+</div>
 
-<ul>
-    <% @project.postings.each do |post| %>
-       <li><%= post.person.name %> (<%= post.person.phone_number %>) at <%= post.lat%>,<%= post.lng%></li> 
-    <% end %>
-    <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_person",:method => :post) %>
-        <div>
-            <%= select_tag(:person_id,((@organization.people.select {|person| !@project.postings.any? {|post| post.person_id == person.id}}).map {|p| "<option value='#{h(p.id)}'>#{h(p.name)}</option>"}).join('').html_safe)%>
-        </div>
-        <div>
-            lat,lng <%= text_field_tag :lat %> <%= text_field_tag :lng %>
-        </div>
-        <div>
-            <%= hidden_field_tag :project_id, @project.id %>
-            <%= submit_tag 'Add'%>
-        </div>
-    </form>
-</ul>
-
-
-<h2>Packages</h2>
-
-<ul>
-    <% @project.packages.each do |package| %>
-       <li><%= package.identifier %></li> 
-    <% end %>
-    <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_package",:method => :post) %>
+<div class='dialog' id="pkgDialog" title="Packages">
+  <h2>Packages</h2>
+  <ul>
+      <% @project.packages.each do |package| %>
+         <li><%= package.identifier %></li>
+      <% end %>
+      <%= form_tag("/organizations/#{@organization.id}/projects/#{@project.id}/add_package",:method => :post) %>
+           <div>
+             identifier <%= text_field_tag :identifier, (rand()*10000).round.to_s %>
+          </div>
+          <div>
+              source lat,lng <%= text_field_tag :source_lat %> <%= text_field_tag :source_lng %>
+          </div>
+          <div>
          <div>
-           identifier <%= text_field_tag :identifier, (rand()*10000).round.to_s %>
-        </div>
-        <div>
-            source lat,lng <%= text_field_tag :source_lat %> <%= text_field_tag :source_lng %>
-        </div>
-        <div>
-            dest lat,lng <%= text_field_tag :dest_lat %> <%= text_field_tag :dest_lng %>
-        </div>
-        <div>
-            date sent <%= text_field_tag :sent_date %>
-        </div>
-        <div>
-            expected arrival date <%= text_field_tag :exp_delivery_date %>
-        </div>
-        <div>
-            <%= hidden_field_tag :project_id, @project.id %>
-            <%= submit_tag 'Add'%>
-        </div>
-    </form>
-</ul>
+              dest lat,lng <%= text_field_tag :dest_lat %> <%= text_field_tag :dest_lng %>
+          </div>
+          <div>
+              date sent <%= text_field_tag :sent_date %>
+          </div>
+          <div>
+              expected arrival date <%= text_field_tag :exp_delivery_date %>
+          </div>
+          <div>
+              <%= hidden_field_tag :project_id, @project.id %>
+              <%= submit_tag 'Add'%>
+          </div>
+     </form>
+  </ul>
+</div>
