@@ -1,4 +1,4 @@
-<ul>
+<!-- <ul>
     <% @organizations.each do |o| %>
        <li><%= link_to o.name, o %></li> 
        <ul>
@@ -10,3 +10,13 @@
 </ul>
 
 <%= link_to 'New Organization', new_organization_path %>
+-->
+
+<script type="text/javascript">
+    
+    var Statuses = <%= (Package::STATUSES).to_json.html_safe %>;
+    var orgs = <%= (Organization.all.map {|o| {o.id => o.name}}).reduce {|a,b| a.merge(b)}.to_json.html_safe %>;
+    var projs = <%= (Project.all.map {|p| {p.id => p.name}}).reduce {|a,b| a.merge(b)}.to_json.html_safe %>;
+    // packages: [0=>{orgID,projID,stat,location,pkgID,sendDate,recDate}, 1=>{orgID,projID,stat,location,pkgID,sendDate,recDate}]
+    var packages = <%= (Package.all.map {|p| {p.id => {"orgID" => p.project.organization_id, "projID" => p.project_id, "stat" => 1, "location" => [p.source_lat,p.source_lng], "pkgID" => p.identifier, "sendDate" => p.sent_date.to_s, "recDate" => p.exp_delivery_date.to_s}}}).reduce {|a,b| a.merge(b)}.to_json.html_safe %>;
+</script>
